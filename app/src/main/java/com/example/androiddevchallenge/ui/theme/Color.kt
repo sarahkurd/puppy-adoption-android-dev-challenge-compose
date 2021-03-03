@@ -14,21 +14,11 @@
  * limitations under the License.
  */
 package com.example.androiddevchallenge.ui.theme
-
-import androidx.compose.material.darkColors
-import androidx.compose.material.lightColors
 import androidx.compose.ui.graphics.Color
 
+val lighterPurple = Color(red = 205, green = 191, blue = 242)
 val purple200 = Color(0xFFBB86FC)
 val purple500 = Color(0xFF6200EE)
 val purple700 = Color(0xFF3700B3)
-val teal200 = Color(0xFF03DAC5)
-
-val DarkColors = darkColors(
-    primary = purple200,
-    secondary = teal200,
-)
-val LightColors = lightColors(
-    primary = purple500,
-    primaryVariant = purple700,
-)
+val teal200 = Color(red = 124, green = 216, blue = 236)
+val lighterTeal = Color(red = 180, green = 243, blue = 245)

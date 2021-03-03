@@ -19,14 +19,13 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,14 +36,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.Color
 import com.example.androiddevchallenge.ui.theme.*
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MyTheme {
+            MyTheme(darkTheme = isSystemInDarkTheme()) {
                 MyApp()
             }
         }
@@ -54,18 +53,27 @@ class MainActivity : AppCompatActivity() {
 // Start building your app here!
 @Composable
 fun MyApp() {
-    MaterialTheme(
-        colors = if (isSystemInDarkTheme()) DarkColors else LightColors
-    ) {
-        Surface(color = MaterialTheme.colors.background) {
-            Column(
-                modifier = Modifier
-                    .padding(16.dp)
-            ) {
-                PuppyList(puppies = puppyList)
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                backgroundColor = purple700,
+                title = { Text("AdoptMe") },
+                contentColor = Color.White,
+                elevation = 12.dp,
+            )
+        },
+        content = {
+            Surface(color = MaterialTheme.colors.background) {
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                ) {
+                    PuppyList(puppies = puppyList)
+                }
             }
         }
-    }
+    )
+
 }
 
 @Composable
@@ -82,49 +90,99 @@ fun PuppyList(puppies: List<Puppy>) {
 
 @Composable
 fun PuppyItem(puppy: Puppy) {
-    // expanded is "internal state" for PuppyItem
-    val expanded = remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
             .wrapContentSize()
             .clip(shape = RoundedCornerShape(8.dp))
-            .background(color = if (puppy.gender == "Girl") purple200 else teal200)
-            .clickable { expanded.value = !expanded.value }
     ) {
+        PuppyPicture(puppy)
+    }
+}
+
+@Composable
+fun PuppyPicture(puppy: Puppy) {
+    // expanded is "internal state" for PuppyItem
+    val expanded = remember { mutableStateOf(false) }
+    Column{
+        Card(
+            elevation = if (expanded.value) 16.dp else 8.dp,
+            modifier = Modifier
+                .clickable { expanded.value = !expanded.value }
+        ) {
+            Image(
+                painter = painterResource(id = puppy.images[0]),
+                contentDescription = null,
+                modifier = Modifier
+                    .height(270.dp)
+                    .fillMaxWidth(),
+                contentScale = ContentScale.Crop
+            )
+        }
         // content of the card depends on the current value of expanded
-        PuppyPicture(puppy.images)
         if (expanded.value) PuppyContent(puppy)
     }
 }
 
 @Composable
-fun PuppyPicture(images: List<Int>) {
-    Card(
-        elevation = 4.dp
-    ) {
-        Image(
-            painter = painterResource(id = images[0]),
-            contentDescription = null,
-            modifier = Modifier
-                .height(270.dp)
-                .fillMaxWidth(),
-            contentScale = ContentScale.Crop
-        )
-    }
-}
-
-@Composable
 fun PuppyContent(puppy: Puppy) {
+    val expanded = remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
+            .background(
+                color =
+                if (puppy.gender == "Girl") {
+                    if (expanded.value) lighterPurple else purple200
+                } else {
+                    if (expanded.value) lighterTeal else teal200
+                }
+            )
             .padding(16.dp)
             .animateContentSize()
     ) {
-        Text("Hello, my name is ${puppy.name}", fontWeight = FontWeight.Bold)
+        Text("Hello, my name is ${puppy.name}",
+            fontWeight = FontWeight.Bold)
         Text("I am ${puppy.age} years old",
             style = typography.caption)
         Text("I am a ${puppy.breed}, and I might have some ${puppy.mix}!",
             style = typography.caption)
+        if (!expanded.value) {
+            IconButton(onClick = { expanded.value = true}, modifier = Modifier.fillMaxWidth()) {
+                Icon(imageVector = Icons.Default.ExpandMore, contentDescription = null)
+            }
+        }
+        if (expanded.value) {
+            PuppyDetails(puppy = puppy)
+            IconButton(onClick = { expanded.value = false}, modifier = Modifier.fillMaxWidth()) {
+                Icon(imageVector = Icons.Default.ExpandLess, contentDescription = null)
+            }
+        }
+    }
+}
+
+@Composable
+fun PuppyDetails(puppy: Puppy) {
+    Column(
+        modifier = Modifier
+            .animateContentSize()
+    ) {
+        Spacer(modifier = Modifier.absolutePadding(top = 16.dp))
+        Text("Bio",
+            fontWeight = FontWeight.Bold,
+            style = typography.h6)
+        Text(puppy.bio,
+            style = typography.body2)
+        Spacer(modifier = Modifier.absolutePadding(top = 8.dp))
+        Text("Sex",
+            fontWeight = FontWeight.Bold,
+            style = typography.h6)
+        Text(puppy.gender,
+            style = typography.body2)
+        Spacer(modifier = Modifier.absolutePadding(top = 8.dp))
+        Text("Size",
+            fontWeight = FontWeight.Bold,
+            style = typography.h6)
+        Text(puppy.size,
+            style = typography.body2)
     }
 }
 
@@ -149,11 +207,6 @@ fun DarkPreview() {
 @Composable
 fun PuppyItemPreview() {
     PuppyItem(puppyList[0])
-}
-
-private enum class PuppyItemState {
-    Collapsed,
-    Expanded
 }
 
 
