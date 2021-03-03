@@ -19,10 +19,28 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absolutePadding
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Card
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
@@ -31,13 +49,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.graphics.Color
-import com.example.androiddevchallenge.ui.theme.*
+import com.example.androiddevchallenge.ui.theme.MyTheme
+import com.example.androiddevchallenge.ui.theme.lighterPurple
+import com.example.androiddevchallenge.ui.theme.lighterTeal
+import com.example.androiddevchallenge.ui.theme.purple200
+import com.example.androiddevchallenge.ui.theme.purple700
+import com.example.androiddevchallenge.ui.theme.teal200
+import com.example.androiddevchallenge.ui.theme.typography
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,7 +97,6 @@ fun MyApp() {
             }
         }
     )
-
 }
 
 @Composable
@@ -103,7 +126,7 @@ fun PuppyItem(puppy: Puppy) {
 fun PuppyPicture(puppy: Puppy) {
     // expanded is "internal state" for PuppyItem
     val expanded = remember { mutableStateOf(false) }
-    Column{
+    Column {
         Card(
             elevation = if (expanded.value) 16.dp else 8.dp,
             modifier = Modifier
@@ -139,20 +162,26 @@ fun PuppyContent(puppy: Puppy) {
             .padding(16.dp)
             .animateContentSize()
     ) {
-        Text("Hello, my name is ${puppy.name}",
-            fontWeight = FontWeight.Bold)
-        Text("I am ${puppy.age} years old",
-            style = typography.caption)
-        Text("I am a ${puppy.breed}, and I might have some ${puppy.mix}!",
-            style = typography.caption)
+        Text(
+            "Hello, my name is ${puppy.name}",
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            "I am ${puppy.age} years old",
+            style = typography.caption
+        )
+        Text(
+            "I am a ${puppy.breed}, and I might have some ${puppy.mix}!",
+            style = typography.caption
+        )
         if (!expanded.value) {
-            IconButton(onClick = { expanded.value = true}, modifier = Modifier.fillMaxWidth()) {
+            IconButton(onClick = { expanded.value = true }, modifier = Modifier.fillMaxWidth()) {
                 Icon(imageVector = Icons.Default.ExpandMore, contentDescription = null)
             }
         }
         if (expanded.value) {
             PuppyDetails(puppy = puppy)
-            IconButton(onClick = { expanded.value = false}, modifier = Modifier.fillMaxWidth()) {
+            IconButton(onClick = { expanded.value = false }, modifier = Modifier.fillMaxWidth()) {
                 Icon(imageVector = Icons.Default.ExpandLess, contentDescription = null)
             }
         }
@@ -166,23 +195,35 @@ fun PuppyDetails(puppy: Puppy) {
             .animateContentSize()
     ) {
         Spacer(modifier = Modifier.absolutePadding(top = 16.dp))
-        Text("Bio",
+        Text(
+            "Bio",
             fontWeight = FontWeight.Bold,
-            style = typography.h6)
-        Text(puppy.bio,
-            style = typography.body2)
+            style = typography.h6
+        )
+        Text(
+            puppy.bio,
+            style = typography.body2
+        )
         Spacer(modifier = Modifier.absolutePadding(top = 8.dp))
-        Text("Sex",
+        Text(
+            "Sex",
             fontWeight = FontWeight.Bold,
-            style = typography.h6)
-        Text(puppy.gender,
-            style = typography.body2)
+            style = typography.h6
+        )
+        Text(
+            puppy.gender,
+            style = typography.body2
+        )
         Spacer(modifier = Modifier.absolutePadding(top = 8.dp))
-        Text("Size",
+        Text(
+            "Size",
             fontWeight = FontWeight.Bold,
-            style = typography.h6)
-        Text(puppy.size,
-            style = typography.body2)
+            style = typography.h6
+        )
+        Text(
+            puppy.size,
+            style = typography.body2
+        )
     }
 }
 
@@ -208,5 +249,3 @@ fun DarkPreview() {
 fun PuppyItemPreview() {
     PuppyItem(puppyList[0])
 }
-
-
